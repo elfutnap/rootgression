@@ -292,9 +292,13 @@ void rootgression(const Char_t *inputfile){
 	variance = variance /(rep-1);
 	spe=sqrt(variance);
 	printf("Answers:");
-	sb = 2*sqrt(pow(spe,2)/experiments);		//Calculation of sb
+	sb = sqrt(pow(spe,2)/experiments);		//Calculation of sb (halved because model parameters, not effects)
 	sb_crit = sb*t;					//Calculation of sb_crit
-	for(i=0;i<matrix_columns;i++){
+	if(model(0,0)<(sb_crit*2) && model(0,0)>-(sb_crit*2) ){
+			model(0,0)=0;
+			p++;
+	}
+	for(i=1;i<matrix_columns;i++){
 		if(model(i,0)<sb_crit && model(i,0)>-sb_crit ){
 			model(i,0)=0;
 			p++;
@@ -321,16 +325,21 @@ void rootgression(const Char_t *inputfile){
 	for(i=0; i<experiments; i++){
 		h1->Fill(i,residuals_trans(0,i));
 	}
-	h1->Draw("ap*");
+	TLine *zero = new TLine(0,0,experiments,0);
+	zero->SetLineColor(kRed);
+	h1->Draw("*");
+	zero->Draw();
 	c1->Draw();
+
 	//Statistic parameters
 	printf("n of Replicas:			%d\n",rep); //Replicas
 	printf("Mean:				%lf\n",mean); //Mean
 	printf("Variance:			%lf\n",variance); //Variance
+	printf("Experimental error:		%lf\n",spe); //Experimental error
+printf("Coefficient of variation:		%lf\n",spe/mean); //CV%
 	printf("t value:			%f\n", t); //T-value
-	printf("Experimental error:		%lf\n",spe); //Variance
-	printf("Uncertainty of the esteem:	%lf\n",sb); //Variance
-	printf("Critical uncertainty:		%lf\n\n",sb_crit); //Variance
+	printf("Uncertainty of the esteem:	%lf\n",sb); //Uncertainty of the esteem
+	printf("Critical uncertainty:		%lf\n\n",sb_crit); //Crit unc
 	
 	//Declaration of all the sum of squares and arrays
 	Double_t SS_T=0;
@@ -364,7 +373,7 @@ void rootgression(const Char_t *inputfile){
 	i = (SS_Corr/(rep-1))/(SS_Res/(experiments-rep));
 	printf("F test on significance via residuals: 		%lf\n",i); //F test on significance 
 	i = pow((model(0,0)-mean),2)/(variance*(pow(rep,-1)-pow(experiments,-1)));
-	printf("F test on curvature via variance: 				%lf\n",i); //F test on significance 
+	printf("F test on curvature via variance: 		%lf\n",i); //F test on significance 
 
 	/*======= Experimental domain graphs =======*/
 	for(i=0; i<experiments; i++){
@@ -419,6 +428,7 @@ void rootgression(const Char_t *inputfile){
 	TGraph *normal_pp = new TGraph(experiments, f1, f2);
 	normal_pp->Draw("ap*");
 	TF1 *normal_pp_fit = new TF1("normal_pp_fit","pol 1",0-999,999); //Fitting of the normal probability plot
+	normal_pp->SetTitle("Normal Probability Plot; Answers; Predicted");
    	normal_pp->Fit("normal_pp_fit","C");
 	Double_t p1 = normal_pp_fit->GetParameter(0); // NPP fit parameters
 

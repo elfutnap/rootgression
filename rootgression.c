@@ -291,8 +291,7 @@ void rootgression(const Char_t *inputfile){
 	}
 	variance = variance /(rep-1);
 	spe=sqrt(variance);
-	printf("Answers:");
-	sb = sqrt(pow(spe,2)/experiments);		//Calculation of sb (halved because model parameters, not effects)
+	sb = sqrt(variance/experiments);		//Calculation of sb (halved because model parameters, not effects)
 	sb_crit = sb*t;					//Calculation of sb_crit
 	if(model(0,0)<(sb_crit*2) && model(0,0)>-(sb_crit*2) ){
 			model(0,0)=0;
@@ -336,10 +335,10 @@ void rootgression(const Char_t *inputfile){
 	printf("Mean:				%lf\n",mean); //Mean
 	printf("Variance:			%lf\n",variance); //Variance
 	printf("Experimental error:		%lf\n",spe); //Experimental error
-printf("Coefficient of variation:		%lf\n",spe/mean); //CV%
+	printf("Coefficient of variation:	%lf\n",spe/mean); //CV%
 	printf("t value:			%f\n", t); //T-value
-	printf("Uncertainty of the esteem:	%lf\n",sb); //Uncertainty of the esteem
-	printf("Critical uncertainty:		%lf\n\n",sb_crit); //Crit unc
+	printf("Uncertainty of the esteem:	%lf\n",2*sb); //Uncertainty of the esteem
+	printf("Critical uncertainty:		%lf\n\n",2*sb_crit); //Crit unc
 	
 	//Declaration of all the sum of squares and arrays
 	Double_t SS_T=0;

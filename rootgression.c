@@ -1,3 +1,22 @@
+/* Welcome to rootgression. 
+ * This simple software performs spatial analysis on samples in an experimental domain and Multiple Linear Regression for up to 4 factors with a model with up to 16 terms. 
+
+ The software needs root to be executed and in could be started via:
+    ------------------------------------
+ $root
+ root[1] .x rootgression("inputfile.ext")
+    ------------------------------------
+ In order to save everything in an output file, the software can be started as:
+     ------------------------------------
+ $root
+ root[1] .> output.log
+ .x rootgression("inputfile.ext")
+ .>
+ root[2] 
+    ------------------------------------
+ And all data will be saved in a log file. 
+ */
+
 #include "TCanvas.h"
 #include "TEllipse.h"
 #include "TF1.h"
@@ -27,7 +46,7 @@
 #include <stdlib.h>
 
 #define MAX 256
-Float_t t;		//T of student for 3 replicas 95% of confidence
+Float_t t;			//T of student for 3 replicas 95% of confidence
 Int_t lineBuffer=999;		//Line buffer
 Int_t error=0;			//Number of errors overall
 

@@ -57,10 +57,11 @@ void rootgression(const Char_t *inputfile){
 	/*======= Variables declaration =======*/
 	printf("\nOpening input file '%s'.\n",inputfile); 		//Check file
 	FILE *ifp;							//Input file name
-	Char_t const *mode = "r"; 					// Read
+	Char_t const *mode = "r";					//Read
+	Char_t autoscaling;
 	Float_t i=0, j=0, k=0, x=0;					//Runners reset on every cycle
 	Int_t z=0;
-	Int_t p=0, rep;						//Parameters of the model
+	Int_t p=0, rep;							//Parameters of the model
 	Float_t MIN_f1, MAX_f1, MIN_f2, MAX_f2, MIN_f3, MAX_f3, MIN_f4, MAX_f4;
 	Double_t f1[MAX], f2[MAX];	
 	Double_t mean, variance=0, spe, sb, sb_crit;			//Errore puramente sperimentale corretto per t value
@@ -81,14 +82,20 @@ void rootgression(const Char_t *inputfile){
 	do{								//Scan for experiment replicas
 		printf("Insert the number of replicas that were done:	");
 		scanf("%d",&rep);
-	}while(experiments<1);
+	}while(rep<1);
 	matrix_columns=pow(2,factors);					//Columns are 2^factors
 	TArrayD rep_array(rep);
-	for(i=0;i<rep;i++){
-		printf("Please insert the %f replica:	",i+1);
-		scanf("%lf",&rep_array[i]);
+	if(rep!=1){
+		for(i=0;i<rep;i++){
+			printf("Please insert the %f replica:	",i+1);
+			scanf("%lf",&rep_array[i]);
+		}
+		which_t(rep);
 	}
-	which_t(rep);
+	else{
+		which_t(3);
+	}
+
 
 	/*======= Matrix, vectors and arrays =======*/
 	TMatrixD doe(experiments,matrix_columns); 			//Experimental matrix, first column 1 for intercept
@@ -126,90 +133,78 @@ void rootgression(const Char_t *inputfile){
         	i++;
 		printf("\nInput file opened successfully.\n");		 //File opened
 	}
-
-	/*======= Reading line by line =======*/
+/*======= Reading line by line =======*/
 	i=0;
 	if(factors==1){
-		printf("Insert first factor's minimum:	");
-		scanf("%f",&MIN_f1);	
-		printf("Insert first factor's maximum:	");
-		scanf("%f",&MAX_f1);
-	    	while ((read = getline(&line, &len, ifp)) != -1) {
+		while ((read = getline(&line, &len, ifp)) != -1) {
 			if (strlen(line) > 1) { 			//Skip null lines
 				sscanf(line, "%lf %lf",&arr_f1[i],&arr_answers[i]); 			//Reading 1 factor + answer
-				arr_f1_rs[i] = ((((arr_f1[i]- MIN_f1) / (MAX_f1-MIN_f1)) *2 ) -1); 	// Factor 1 Range Scaled
 				i++;
-	       		}
-	    	}
+			}
+		}
+		MIN_f1 = TMath::MinElement(experiments, &arr_f1[0]);
+		MAX_f1 = TMath::MaxElement(experiments, &arr_f1[0]);
+		for(i=0; i<experiments;i++){
+			arr_f1_rs[i] = ((((arr_f1[i]- MIN_f1) / (MAX_f1-MIN_f1)) *2 ) -1); 	// Factor 1 Range Scaled
+		}
+		
 	}
 	if(factors==2){
-		printf("Insert first factor's minimum:	");
-		scanf("%f",&MIN_f1);	
-		printf("Insert first factor's maximum:	");
-		scanf("%f",&MAX_f1);
-		printf("Insert second factor's minimum:	");
-		scanf("%f",&MIN_f2);	
-		printf("Insert second factor's maximum:	");
-		scanf("%f",&MAX_f2);
 	    	while ((read = getline(&line, &len, ifp)) != -1) {
 			if (strlen(line) > 1) { 			//Skip null lines
 				sscanf(line, "%lf %lf %lf",&arr_f1[i],&arr_f2[i],&arr_answers[i]); 	//Reading 2 factors + answer
-				arr_f1_rs[i] = ((((arr_f1[i]- MIN_f1) / (MAX_f1-MIN_f1)) *2 ) -1); 	//Factor 1 Range Scaled
-				arr_f2_rs[i] = ((((arr_f2[i]- MIN_f2) / (MAX_f2-MIN_f2)) *2 ) -1); 	//Factor 2 Range Scaled
 				i++;
 	       		}
 	    	}
+		MIN_f1 = TMath::MinElement(experiments, &arr_f1[0]);
+		MAX_f1 = TMath::MaxElement(experiments, &arr_f1[0]);	
+		MIN_f2 = TMath::MinElement(experiments, &arr_f1[0]);
+		MAX_f2 = TMath::MaxElement(experiments, &arr_f1[0]);
+		for(i=0; i<experiments;i++){
+			arr_f1_rs[i] = ((((arr_f1[i]- MIN_f1) / (MAX_f1-MIN_f1)) *2 ) -1); 	//Factor 1 Range Scaled
+			arr_f2_rs[i] = ((((arr_f2[i]- MIN_f2) / (MAX_f2-MIN_f2)) *2 ) -1); 	//Factor 2 Range Scaled
+		}
 	}
 	if(factors==3){
-		printf("Insert first factor's minimum:	");
-		scanf("%f",&MIN_f1);	
-		printf("Insert first factor's maximum:	");
-		scanf("%f",&MAX_f1);
-		printf("Insert second factor's minimum:	");
-		scanf("%f",&MIN_f2);	
-		printf("Insert second factor's maximum:	");
-		scanf("%f",&MAX_f2);
-		printf("Insert third factor's minimum:	");
-		scanf("%f",&MIN_f3);	
-		printf("Insert third factor's maximum:	");
-		scanf("%f",&MAX_f3);
 	    	while ((read = getline(&line, &len, ifp)) != -1) {
 			if (strlen(line) > 1) { 			//Skip null lines
 				sscanf(line, "%lf %lf %lf %lf",&arr_f1[i],&arr_f2[i],&arr_f3[i],&arr_answers[i]); //Reading 3 factors + answer
-				arr_f1_rs[i] = (((arr_f1[i]- MIN_f1) / (MAX_f1-MIN_f1)) *2 ) -1;
-				arr_f2_rs[i] = (((arr_f2[i]- MIN_f2) / (MAX_f2-MIN_f2)) *2 ) -1;
-				arr_f3_rs[i] = (((arr_f3[i]- MIN_f3) / (MAX_f3-MIN_f3)) *2 ) -1;
 				i++;
 	       		}
 	    	}
+		MIN_f1 = TMath::MinElement(experiments, &arr_f1[0]);
+		MAX_f1 = TMath::MaxElement(experiments, &arr_f1[0]);	
+		MIN_f2 = TMath::MinElement(experiments, &arr_f2[0]);
+		MAX_f2 = TMath::MaxElement(experiments, &arr_f2[0]);
+		MIN_f3 = TMath::MinElement(experiments, &arr_f3[0]);
+		MAX_f3 = TMath::MaxElement(experiments, &arr_f3[0]);
+		for(i=0; i<experiments;i++){
+			arr_f1_rs[i] = ((((arr_f1[i]- MIN_f1) / (MAX_f1-MIN_f1)) *2 ) -1); 	//Factor 1 Range Scaled
+			arr_f2_rs[i] = ((((arr_f2[i]- MIN_f2) / (MAX_f2-MIN_f2)) *2 ) -1); 	//Factor 2 Range Scaled
+			arr_f3_rs[i] = ((((arr_f3[i]- MIN_f3) / (MAX_f3-MIN_f3)) *2 ) -1); 	//Factor 3 Range Scaled
+		}
 	}
 	if(factors==4){
-		printf("Insert first factor's minimum:	");
-		scanf("%f",&MIN_f1);	
-		printf("Insert first factor's maximum:	");
-		scanf("%f",&MAX_f1);
-		printf("Insert second factor's minimum:	");
-		scanf("%f",&MIN_f2);	
-		printf("Insert second factor's maximum:	");
-		scanf("%f",&MAX_f2);
-		printf("Insert third factor's minimum:	");
-		scanf("%f",&MIN_f3);	
-		printf("Insert third factor's maximum:	");
-		scanf("%f",&MAX_f3);
-		printf("Insert fourth factor's minimum:	");
-		scanf("%f",&MIN_f4);	
-		printf("Insert fourth factor's maximum:	");
-		scanf("%f",&MAX_f4);
 	    	while ((read = getline(&line, &len, ifp)) != -1) {
 			if (strlen(line) > 1) { 			//Skip null lines
 				sscanf(line, "%lf %lf %lf %lf %lf",&arr_f1[i],&arr_f2[i],&arr_f3[i],&arr_f4[i],&arr_answers[i]); //Reading 4 factors + answer
-				arr_f1_rs[i] = (((arr_f1[i]- MIN_f1) / (MAX_f1-MIN_f1)) *2 ) -1;
-				arr_f2_rs[i] = (((arr_f2[i]- MIN_f2) / (MAX_f2-MIN_f2)) *2 ) -1;
-				arr_f3_rs[i] = (((arr_f3[i]- MIN_f3) / (MAX_f3-MIN_f3)) *2 ) -1;
-				arr_f4_rs[i] = (((arr_f4[i]- MIN_f4) / (MAX_f4-MIN_f4)) *2 ) -1;
 				i++;
 	       		}
 	    	}
+		MIN_f1 = TMath::MinElement(experiments, &arr_f1[0]);
+		MAX_f1 = TMath::MaxElement(experiments, &arr_f1[0]);	
+		MIN_f2 = TMath::MinElement(experiments, &arr_f2[0]);
+		MAX_f2 = TMath::MaxElement(experiments, &arr_f2[0]);
+		MIN_f3 = TMath::MinElement(experiments, &arr_f3[0]);
+		MAX_f3 = TMath::MaxElement(experiments, &arr_f3[0]);
+		MIN_f4 = TMath::MinElement(experiments, &arr_f4[0]);
+		MAX_f4 = TMath::MaxElement(experiments, &arr_f4[0]);
+		for(i=0; i<experiments;i++){
+			arr_f1_rs[i] = ((((arr_f1[i]- MIN_f1) / (MAX_f1-MIN_f1)) *2 ) -1); 	//Factor 1 Range Scaled
+			arr_f2_rs[i] = ((((arr_f2[i]- MIN_f2) / (MAX_f2-MIN_f2)) *2 ) -1); 	//Factor 2 Range Scaled
+			arr_f3_rs[i] = ((((arr_f3[i]- MIN_f3) / (MAX_f3-MIN_f3)) *2 ) -1); 	//Factor 3 Range Scaled
+			arr_f4_rs[i] = ((((arr_f4[i]- MIN_f4) / (MAX_f4-MIN_f4)) *2 ) -1); 	//Factor 4 Range Scaled
+		}
 	}
     	fclose(ifp);							//Closing the file
 
@@ -304,12 +299,19 @@ void rootgression(const Char_t *inputfile){
 	TMatrixDColumn(answers,0) = TMatrixDRow(vettore_tmp,0);
 	matr_tmp = doe_disp * doe_trans;
 	model = matr_tmp * answers;	
-	mean = TMath::Mean(rep, &rep_array[0]);
-	for(i=0;i<rep;i++){
-		variance = variance + pow(rep_array[i]-mean,2);
+	if(rep==1){					//No replicas
+		mean = arr_answers[0];
+		variance = 1;
+		spe = 1;
 	}
-	variance = variance /(rep-1);
-	spe=sqrt(variance);
+	else{						//Replicas
+		mean = TMath::Mean(rep, &rep_array[0]);
+		for(i=0;i<rep;i++){
+			variance = variance + pow(rep_array[i]-mean,2);
+		}
+		variance = variance /(rep-1);
+		spe=sqrt(variance);
+	}
 	sb = sqrt(variance/experiments);		//Calculation of sb (halved because model parameters, not effects)
 	sb_crit = sb*t;					//Calculation of sb_crit
 	if(model(0,0)<(sb_crit*2) && model(0,0)>-(sb_crit*2) ){
@@ -388,10 +390,8 @@ void rootgression(const Char_t *inputfile){
 	printf("\n\nR^2: 						%lf\n",SS_Fact/SS_Corr); //Correlation coefficient of the model
 	i = 1- (SS_Res/(experiments-p))/(SS_Corr/(experiments-1));
 	printf("R^2 adj: 					%lf\n",i); //Correlation coefficient adjusted of the model
-	i = (SS_Corr/(rep-1))/(SS_Res/(experiments-rep));
+	i = (SS_Fact/(p-1))/(SS_Res/(experiments-p));
 	printf("F test on significance via residuals: 		%lf\n",i); //F test on significance 
-	i = pow((model(0,0)-mean),2)/(variance*(pow(rep,-1)-pow(experiments,-1)));
-	printf("F test on curvature via variance: 		%lf\n",i); //F test on significance 
 
 	/*======= Experimental domain graphs =======*/
 	for(i=0; i<experiments; i++){

@@ -50,7 +50,7 @@ Float_t t;			//T of student for 3 replicas 95% of confidence
 Int_t lineBuffer=999;		//Line buffer
 Int_t error=0;			//Number of errors overall
 
-void rootgression_simplified(const Char_t *inputfile){
+void rootgression_quick(const Char_t *inputfile){
 
 	/*======= Variables declaration =======*/
 	printf("\nOpening input file '%s'.\n",inputfile); 		//Check file

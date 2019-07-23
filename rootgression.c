@@ -392,7 +392,8 @@ void rootgression(const Char_t *inputfile){
 	printf("R^2 adj: 					%lf\n",i); //Correlation coefficient adjusted of the model
 	i = (SS_Fact/(p-1))/(SS_Res/(experiments-p));
 	printf("F test on significance via residuals: 		%lf\n",i); //F test on significance 
-
+	printf("Uncertainty of the esteem:			%lf\n",sqrt(SS_Res/(experiments-p))); //Uncertainty of the esteem
+	
 	/*======= Experimental domain graphs =======*/
 	for(i=0; i<experiments; i++){
 		arr_tmp[i]= arr_tmp_1[i] = arr_tmp_2[i] = 1;

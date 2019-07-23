@@ -1,16 +1,16 @@
-/* Welcome to rootgression. 
+/* Welcome to rootgression simplified. 
  * This simple software performs spatial analysis on samples in an experimental domain and Multiple Linear Regression for up to 4 factors with a model with up to 16 terms. 
 
  The software needs root to be executed and in could be started via:
     ------------------------------------
  $root
- root[1] .x rootgression("inputfile.ext")
+ root[1] .x rootgression_simplified("inputfile.ext")
     ------------------------------------
  In order to save everything in an output file, the software can be started as:
      ------------------------------------
  $root
  root[1] .> output.log
- .x rootgression("inputfile.ext")
+ .x rootgression_simplified("inputfile.ext")
  .>
  root[2] 
     ------------------------------------
@@ -301,6 +301,17 @@ void rootgression_simplified(const Char_t *inputfile){
 	printf("R^2 adj: 					%lf\n",i); //Correlation coefficient adjusted of the model
 	i = (SS_Fact/(p-1))/(SS_Res/(experiments-p));
 	printf("F test on significance via residuals: 		%lf\n",i); //F test on significance 
+
+	//Alternative Variance
+	for(i=0; i<experiments;i++){
+		x = x+arr_answers[i];
+	}
+	x=pow(x,2);
+	variance = pow(experiments-1,-1) *(SS_T - (pow(experiments,-1)*x));
+	spe=sqrt(variance);
+	printf("Variance esteem:				%lf\n",variance); //Variance
+	printf("Experimental error esteem:			%lf\n",spe); //Experimental error
+	printf("Uncertainty of the esteem:			%lf\n",sqrt(SS_Res/(experiments-p))); //Uncertainty of the esteem
 
 	/*======= Experimental domain graphs =======*/
 	for(i=0; i<experiments; i++){

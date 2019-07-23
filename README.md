@@ -30,3 +30,5 @@ For "experimental_data.dat" there are 3 replicas of the centre of the experiment
 For "factor_design.dat", there are 5 replicas of the centre of the experimental domain, which values are 42, 41, 41, 39 and 40. Minimum for factor 1 is 0 and maximum 40. Minimum for factor 2 is 1 and maximum 10. Minimum for factor 3 is 5 and maximum 100. As you'll see in the spatial distribution graph, this is a 2-level factor design.
 
 For "factor_design_2.dat", factor coordinates are already autoscaled, so for each factor the minimum is -1 and the maximum is 1. There are 4 replicas at the centre of the experimental design, which are 17.11, 16.05, 17.50, 18.00.
+
+For "fumo.dat", there are 4 factors, respectively: exposition (0-5), risk (10-100), impact (0-100) and age (20-66). This cam ne tested with the light version Rootgression Simplified as there are no replicas of the experiment and the model is not calculated with interaction between factors, but just as y = a + b1*f1 + b2*f2 + b3*f3 + b4*f4.

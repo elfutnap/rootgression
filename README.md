@@ -23,12 +23,20 @@ The input dataset should be a tabulation-separated dataset. It can cointain up t
 If in the dataset there are 4 columns and you select only two factors to study, the third column will be automatically recognized as the answer column.
 
 ## May I see an example?
-Of course. In the folder you can try the two given datasets "experimental_data.dat", "factor_design.dat" and "factor_design_2.dat".
+Of course. In the folder you can try the given datasets.
 
-For "experimental_data.dat" there are 3 replicas of the centre of the experimental domain, which values are 25, 28 and 29. Minimum for all factor is 0 and maximum is 50.
+## What is rootgression_quick?
+Rootgression performs a rigorous matrix-based MLR which is optimized for experiments designed with the DOE techniques, such as factor designs. Parameters of the linear model are or aren't included in the model based on the standard error and the number of replicas performed at the centre of the experimental design. The calculated model considers every interaction between the factors, so the full model of a 2 factor design would be: 
 
-For "factor_design.dat", there are 5 replicas of the centre of the experimental domain, which values are 42, 41, 41, 39 and 40. Minimum for factor 1 is 0 and maximum 40. Minimum for factor 2 is 1 and maximum 10. Minimum for factor 3 is 5 and maximum 100. As you'll see in the spatial distribution graph, this is a 2-level factor design.
+y = a + b1*f1 + b2*f2 + b3*f1*f2
 
-For "factor_design_2.dat", factor coordinates are already autoscaled, so for each factor the minimum is -1 and the maximum is 1. There are 4 replicas at the centre of the experimental design, which are 17.11, 16.05, 17.50, 18.00.
+Rootgression quick is designed in order to be applied to every experimental situation which does not consider the experiment distribution, such as poll answers. The linear model is also calculated without considering the interaction between factors, so a 2-factor experiment will have the following shape:
 
-For "fumo.dat", there are 4 factors, respectively: exposition (0-5), risk (10-100), impact (0-100) and age (20-66). This cam ne tested with the light version Rootgression Simplified as there are no replicas of the experiment and the model is not calculated with interaction between factors, but just as y = a + b1*f1 + b2*f2 + b3*f3 + b4*f4.
+y = a + b1*f1 + b2*f2
+
+#### smoke.dat
+This dataset has 4 factors and 100 experiments. It is an investigation of the aversion toward the smoke based on 4 explored parameters (exposition, risk, figure, age). This dataset is suggested to be analyzed with rootgression_quick because, being random samples and not based on an experimental design, there aren't replicas of the samples on which calculate the crytical sb that gives significativity on the model parameters. 
+Execute the example just by copying smoke.dat from the sample folder to the same folder of rootgression_simplified.dat and input ".x rootgression_simplified.c ("smoke.dat"). Requested parameters will be the number of factors (4) and the number of the samples (100).
+
+#### factor_design.dat
+In this dataset there are 3 factors and 8 experiments. There are 5 replicas of the centre of the experimental domain, which y-values are 42, 41, 41, 39 and 40. As you'll see in the spatial distribution graph, this is a 2-level factor design.

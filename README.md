@@ -9,7 +9,7 @@ ROOTgression is capable of performing:
  - Analysis of spatial distribution for experiments of which were analyzed up to three factors.
  - Multiple Linear Regression for up to 4 factors (up to 16 coefficients).
  - ANOVA  (Model tests of linearity and significance with F-test, Sums of Squares,...)
- - Model parameters R^2, R^2 ajusted
+ - Model parameters R^2, R^2 adjusted
  - Residual analysis and normal probability plot.
  
 ## How do I use it?
